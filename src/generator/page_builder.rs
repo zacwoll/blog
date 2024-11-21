@@ -71,7 +71,7 @@ fn header(current_post: &Post, posts: &[PostPreview], tag_set: &HashSet<String>)
             title { (current_post.parsed_post_data.data.title) }
             meta name="author" content=(current_post.parsed_post_data.data.author );
             meta name="description" content=(current_post.parsed_post_data.data.description);
-            link rel="stylesheet" type="text/css" href="/assets/styles.css";
+            link rel="stylesheet" type="text/css" href="assets/styles.css";
         }
         header {
             // navbar

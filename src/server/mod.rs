@@ -1,7 +1,7 @@
 pub mod threadpool;
 
 use std::{
-    ffi::OsStr, fs, io::{prelude::*, BufReader}, net::{TcpListener, TcpStream}, path::{Path, PathBuf},
+    fs, io::{prelude::*, BufReader}, net::{TcpListener, TcpStream}, path::{Path, PathBuf},
 };
 use threadpool::ThreadPool;
 
