@@ -1,11 +1,7 @@
 pub mod threadpool;
 
 use std::{
-    fs,
-    io::{prelude::*, BufReader},
-    net::{TcpListener, TcpStream},
-    thread,
-    time::Duration,
+    ffi::OsStr, fs, io::{prelude::*, BufReader}, net::{TcpListener, TcpStream}, path::{Path, PathBuf},
 };
 use threadpool::ThreadPool;
 
@@ -53,30 +49,118 @@ pub fn server_create(port: u16) {
     // println!("Shutting down.");
 }
 
-fn handle_connection(mut stream: TcpStream) -> Result<(), Box<dyn std::error::Error>> {
-    let buf_reader = BufReader::new(&mut stream);
-    let request_line = buf_reader.lines().next().unwrap().unwrap();
+fn get_content_type(ext: &str) -> &str {
+    match ext {
+        "html" => "text/html",
+        "css" => "text/css",
+        "png" => "image/png",
+        "jpg" | "jpeg" => "image/jpeg",
+        "gif" => "image/gif",
+        "" => "text/html",
+        _ => "application/octet-stream", // Default content type for files with no extension or unknown extension
+    }
+}
 
-    let (status_line, filename) = match &request_line[..] {
-        "GET / HTTP/1.1" => ("HTTP/1.1 200 OK", "output/sample.html"),
-        "GET /sleep HTTP/1.1" => {
-            thread::sleep(Duration::from_secs(5));
-            ("HTTP/1.1 200 OK", "output/sample.html")
-        }
-        _ => ("HTTP/1.1 404 NOT FOUND", "output/404.html"),
+// Encodes a response in response to a get request
+// Path => "/" "/assets/styles.css" "/blog_posts/sample"
+fn handle_get(mut stream: TcpStream, path: PathBuf) {
+
+    // Point / => home blog post
+    let path = if path.to_str() == Some("/") {
+        PathBuf::from("/home")
+    } else {
+        path
     };
 
-    let contents = match fs::read_to_string(filename) {
+
+    // TODO: change hardcoded output to env
+    let output_dir = "output";
+    let path = Path::new("output").join(path);
+
+    let mut filename = path.file_name().expect("File name was blank or terminated in ..").to_str().unwrap();
+
+    let ext = match path.extension() {
+        Some(ext) => ext.to_str().unwrap(),
+        None => "html"
+    };
+
+    // Determine the type of content to send back
+    let content_type = get_content_type(ext);
+
+
+    // Construct the file path based on the extension
+    let full_path = {
+        format!("{}{}", output_dir, path.to_string_lossy())
+    };
+    
+    // Debug statement for full path
+    println!("Reading {full_path}");
+
+    let contents = match fs::read_to_string(&full_path) {
         Ok(contents) => contents,
         Err(err) => {
-            return Err(format!("Could not read file {filename}: {err}").into())
+            eprintln!("Error reading contents of {}: {}", &full_path, err);
+            "<h1>404 Not Found</h1>".to_string()
         }
+    };
+
+    let status_line = if contents == "<h1>404 Not Found</h1>" {
+        "HTTP/1.1 404 NOT FOUND"
+    } else {
+        "HTTP/1.1 200 OK"
     };
 
     let length = contents.len();
 
-    let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+    let response = format!("{status_line}\r\nContent-Type: {content_type}\r\nContent-Length: {length}\r\n\r\n{contents}");
 
-    stream.write_all(response.as_bytes())?;
+    if let Err(err) = stream.write_all(response.as_bytes()) {
+        eprintln!("Failed to write response to stream: {}", err);
+    }
+}
+
+fn handle_connection(mut stream: TcpStream) -> Result<(), Box<dyn std::error::Error>> {
+    let buf_reader = BufReader::new(&mut stream);
+    // let request_line = buf_reader.lines().next().unwrap().unwrap();
+
+    // TODO: print out entire request, handle them appropriately
+    let http_request: Vec<_> = buf_reader
+        .lines()
+        .map(|result| result.unwrap())
+        .take_while(|line| !line.is_empty())
+        .collect();
+
+    // when debugging, print each request
+    for line in &http_request {
+        println!("{line}");
+    }
+
+    // Extract the request line
+    let request_line: Vec<&str> = match http_request.get(0) {
+        Some(line) => line.split_whitespace().collect(),
+        None => {
+            eprintln!("Failed to read request line");
+            return Err("Failed to read request line".into());
+        }
+    };
+
+    if request_line.len() != 3 {
+        eprintln!("Invalid request line format");
+        return Err("Invalid request line format".into());
+    }
+
+    let (status, path, _version) = (request_line[0], request_line[1], request_line[2]);
+
+    let path = Path::new("/output").join(path);
+
+    let res = match status {
+        "GET" => handle_get(stream, path),
+        _ => {
+            println!("Invalid request was received: {:?}", request_line)
+        },
+    };
+
+    println!("{:?}", res);
+
     Ok(())
 }

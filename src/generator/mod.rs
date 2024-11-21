@@ -1,18 +1,74 @@
+pub mod page_builder;
+
 use std::{
     fs, io::Write, path::Path,
 };
-use comrak::markdown_to_html;
-use gray_matter::{Matter, engine::YAML};
+use gray_matter::{engine::YAML, Matter, ParsedEntityStruct};
 use serde::Deserialize;
+use std::collections::HashSet;
 
 // Create a struct to hold the front matter
 #[derive(Deserialize, Debug)]
-pub struct FrontMatter {
+pub struct PostData {
     author: String,
     title: String,
     tags: Vec<String>,
     date: String,
     description: String,
+    // keywords: Vec<string>
+}
+
+#[derive(Clone)]
+pub struct File {
+    file_name: String,
+    stem: String,
+    ext: String,
+    file_data: Vec<u8>,
+}
+
+impl File {
+    fn new(file_name: String, stem: String, ext: String, file_data: Vec<u8>) -> File {
+        File {
+            file_name,
+            stem,
+            ext,
+            file_data,
+        }
+    }
+}
+
+// Data structure that unites the file data and the post data (content)
+pub struct Post {
+    file_data: File,
+    parsed_post_data: ParsedEntityStruct<PostData>
+}
+
+impl Post {
+    fn new(file: File, parsed_post: ParsedEntityStruct<PostData>) -> Post {
+        Post {
+            file_data: file,
+            parsed_post_data: parsed_post,
+        }
+    }
+
+    // This constructs a lightweight preview of a post
+    fn to_preview(&self) -> PostPreview {
+        PostPreview {
+            file_name: self.file_data.file_name.clone(),
+            title: self.parsed_post_data.data.title.clone(),
+            tags: self.parsed_post_data.data.tags.clone(),
+            date: self.parsed_post_data.data.date.clone(),
+            excerpt: self.parsed_post_data.excerpt.clone()
+        }
+    }
+}
+
+pub struct PostPreview {
+    file_name: String,
+    title: String,
+    tags: Vec<String>,
+    date: String,
+    excerpt: Option<String>,
 }
 
 pub fn generate_site(content_dir: &str, output_dir: &str) -> Result<(), Box<dyn std::error::Error>> {
@@ -29,6 +85,12 @@ pub fn generate_site(content_dir: &str, output_dir: &str) -> Result<(), Box<dyn 
     if !Path::new(&output_dir).exists() {
         fs::create_dir(&output_dir)?
     }
+
+    // Create container for read-in files
+    let mut posts: Vec<Post> = Vec::new();
+    let mut previews: Vec<PostPreview> = Vec::new();
+
+    let mut post_files : Vec<File> = Vec::new();
 
     // Get files from directory
     let files = fs::read_dir(content_dir)?;
@@ -56,13 +118,18 @@ pub fn generate_site(content_dir: &str, output_dir: &str) -> Result<(), Box<dyn 
         };
 
         // Get extension, filter out non-markdown files
-        let _ext = match file_path.extension() {
-            Some(ext) if ext == "md" => ext,
-            _ => {
-                println!("{} is not a markdown file.", &filename);
+        let ext: String = match file_path.extension() {
+            Some(ext) => ext.to_string_lossy().to_string(),
+            None => {
+                println!("Did not recognize extension");
                 continue;
             }
         };
+
+        if ext != "md" {
+            println!("This is not a markdown file we don't handle those yet ;): {ext}");
+            continue;
+        }
 
         // Extract file stem: "sample.md" => "sample"
         let file_stem = match file_path.file_stem() {
@@ -85,36 +152,68 @@ pub fn generate_site(content_dir: &str, output_dir: &str) -> Result<(), Box<dyn 
             }
         };
 
+        // If in the future I upload non-markdown types I won't want to turn them
+        // into blog posts, so I push all the files into a post_files collection
+        let new_file = File::new(
+            filename.clone(),
+            file_stem.to_string(),
+            ext,
+            file_contents.clone().into_bytes()
+        );
+        post_files.push(new_file.clone());
+
         // Extract Front Matter from contents of file
         let matter = Matter::<YAML>::new();
-        let parsed_matter = match matter.parse_with_struct::<FrontMatter>(&file_contents) {
+        let parsed_matter = match matter.parse_with_struct::<PostData>(&file_contents) {
             Some(matter) => matter,
             None => {
-                println!("Something went wrong with the frontmatter in {display}");
+                println!("Something went wrong with the PostData in {display}");
                 continue;
             }
         };
-        let (_front_matter, content) = (parsed_matter.data, parsed_matter.content);
-        // println!("The author is {}", front_matter.author);
 
-        // parse the content into html
-        let html = markdown_to_html(&content, &comrak::Options::default());
+        // Add to Post Collection
+        let post: Post = Post::new(new_file, parsed_matter);
+        let preview = post.to_preview();
+        posts.push(post);
+        previews.push(preview);
+    }
 
-        let new_filename = file_stem.to_string() + ".html";
-        let new_filepath = Path::new(&output_dir).join(&new_filename);
-        let mut new_file = match fs::File::create(&new_filepath) {
-            Ok(file) => file,
+    // Generate tag set from all posts
+    let mut tag_set: HashSet<String> = HashSet::new();
+    for preview in &previews {
+        for tag in &preview.tags {
+            tag_set.insert(tag.clone());
+        }
+    }
+
+    // Turn blog post => web page
+    for post in posts {
+        // Generate formatted blog post
+        let blog_post = page_builder::generate_blog_post(
+            &post,
+            &previews,
+            &tag_set
+        );
+        
+        let file_name = post.file_data.stem.clone() + ".html";
+        let file_path = Path::new(&output_dir).join(&file_name);
+        
+        let mut create_file = match fs::File::create(&file_path) {
+            Ok(new_file) => new_file,
             Err(err) => {
-                println!("Error creating file: {}: {}", &new_filename, err);
+                println!("Error creating file: {}: {}", &file_name, err);
                 continue;
             }
         };
-
+        
         // Write HTML to file
-        match new_file.write(html.as_bytes()) {
-            Ok(bytes) => println!("{bytes} bytes written to {}", &new_filepath.display()),
+        // TODO: rename top-level file_data to avoid file_data.file_data 
+        match create_file.write(blog_post.0.as_bytes()) {
+            Ok(bytes) => println!("{bytes} bytes written to {}", &file_path.display()),
             Err(err) => println!("Failed to write html to file: {}", err),
         }
+        
     }
 
     Ok(())
