@@ -28,7 +28,7 @@ pub fn server_create(port: u16) {
                             continue;
                         }
                     };
-                    println!("New connection from {peer_addr}");
+                    // println!("New connection from {peer_addr}");
                     stream
                 }
                 Err(err) => {
@@ -76,8 +76,6 @@ fn handle_get(mut stream: TcpStream, path: PathBuf) {
     // TODO: change hardcoded output to env
     let output_dir = "output";
     let path = Path::new("output").join(path);
-
-    let mut filename = path.file_name().expect("File name was blank or terminated in ..").to_str().unwrap();
 
     let ext = match path.extension() {
         Some(ext) => ext.to_str().unwrap(),
@@ -131,13 +129,16 @@ fn handle_connection(mut stream: TcpStream) -> Result<(), Box<dyn std::error::Er
         .collect();
 
     // when debugging, print each request
-    for line in &http_request {
-        println!("{line}");
-    }
+    // for line in &http_request {
+    //     println!("{line}");
+    // }
 
     // Extract the request line
     let request_line: Vec<&str> = match http_request.get(0) {
-        Some(line) => line.split_whitespace().collect(),
+        Some(line) => {
+            println!("{}: {line}", stream.peer_addr()?);
+            line.split_whitespace().collect()
+        },
         None => {
             eprintln!("Failed to read request line");
             return Err("Failed to read request line".into());

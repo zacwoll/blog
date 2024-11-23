@@ -10,55 +10,59 @@ fn navbar(_posts: &[PostPreview], tag_set: &HashSet<String>) -> Markup {
         nav class="navbar" {
             div class="container" {
                 // Left: Logo or brand name
-                a href="/" class="navbar-brand" { "My Blog" }
+                // a href="/" class="navbar-brand" { "ZG" }
 
                 // Center: Navigation links
                 ul class="navbar-nav" {
+                    li class="nav-brand" { a href="/" { "ZG" } }
                     li class="nav-item" { a href="/" { "Home" } }
-                    li class="nav-item" { a href="/blog" { "Blog" } }
+                    li class="nav-item" { a href="/archive" { "Archive" } }
                     li class="nav-item" { a href="/about" { "About" } }
                 }
 
                 // Right: Search bar
-				form class="navbar-search" id="search-form" {
-					input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="search-input";
-				}
-            }
+				form class="navbar-search" id="search-form" tabindex="0" {
+					input class="search-input" type="search" placeholder="Search" aria-label="Search" id="search-input";
 
-            // Tag filter section (Initially hidden)
-            div class="tag-filter" id="tag-filter" style="display: none;" {
-                p { "Filter by Tag:" }
-                form id="tag-form" {
-                    // Checkboxes for each tag
-                    @for tag in tag_set {
-                        label {
-                            input type="checkbox" name="tags" value={(tag.clone())} {
+                    // Tag filter section (Initially hidden)
+                    div class="tag-filter" id="tag-filter" {
+                        p class="tags-label" { "Filter by Tag:" }
+                        div class="tag-div" {
+                            form class="tag-form" {
+                                // Checkboxes for each tag
+                                @for tag in tag_set {
+                                    label class="tag-box" for={ ("checkbox-".to_string() + &tag) } {
+                                        input type="checkbox" id={ ("checkbox-".to_string() + &tag) } name="tags" value={(tag.clone())} {
+                                        }
+                                        span class="tag-term" {
+                                            (tag)
+                                        }
+                                    }
+                                }
                             }
-                            (tag)
                         }
                     }
-                    button type="submit" { "Filter" }
-                }
+				}
             }
         }
 
         // JavaScript to show the filter when search is active
-        script {
-            r#"
-                document.getElementById('search-input').addEventListener('focus', function() {
-                    document.getElementById('tag-filter').style.display = 'block';
-                });
+        // script {
+        //     r#"
+        //         document.getElementById('search-input').addEventListener('focus', function() {
+        //             document.getElementById('tag-filter').style.display = 'block';
+        //         });
 
-                document.getElementById('search-input').addEventListener('blur', function() {
-                    // Hide the filter when search bar loses focus (optional)
-                    setTimeout(function() {
-                        if (!document.getElementById('search-input').value) {
-                            document.getElementById('tag-filter').style.display = 'none';
-                        }
-                    }, 200);
-                });
-            "#
-        }
+        //         document.getElementById('search-input').addEventListener('blur', function() {
+        //             // Hide the filter when search bar loses focus (optional)
+        //             setTimeout(function() {
+        //                 if (!document.getElementById('search-input').value) {
+        //                     document.getElementById('tag-filter').style.display = 'none';
+        //                 }
+        //             }, 200);
+        //         });
+        //     "#
+        // }
     }
 }
 

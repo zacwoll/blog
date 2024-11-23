@@ -54,7 +54,7 @@ impl Post {
     // This constructs a lightweight preview of a post
     fn to_preview(&self) -> PostPreview {
         PostPreview {
-            file_name: self.file_data.file_name.clone(),
+            resource: self.file_data.file_name.clone(),
             title: self.parsed_post_data.data.title.clone(),
             tags: self.parsed_post_data.data.tags.clone(),
             date: self.parsed_post_data.data.date.clone(),
@@ -64,7 +64,7 @@ impl Post {
 }
 
 pub struct PostPreview {
-    file_name: String,
+    resource: String,
     title: String,
     tags: Vec<String>,
     date: String,

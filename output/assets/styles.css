@@ -1,3 +1,65 @@
+.container {
+	max-width: 1200px;
+}
+
+.navbar > .container {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	align-items: center;
+	grid-template-rows: auto auto;
+	row-gap: 1rem;
+}
+
+.navbar ul {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	display: flex;
+	justify-content: space-between;
+}
+
+.navbar-search {
+	justify-self: end;
+	max-width: 900px;
+	width: 90%;
+	display: grid;
+	padding: 1rem;
+}
+
+.navbar-search:focus-within {
+	grid-column: span 2;
+	justify-self: center;
+	background: grey;
+}
+
+.tag-filter {
+	display: none;
+}
+
+.navbar-search:focus-within .tag-filter {
+	display: grid;
+}
+
+.search-input {
+	width:100%;
+	height: fit-content;
+}
+
+.tag-div {
+	display: flex;
+	gap: 4px;
+}
+
+.tag-box {
+	/* padding with more room on the right */
+	padding-left: .15rem;
+	padding-top: .25rem;
+	padding-right: .5rem;
+	padding-bottom: .25rem;
+
+	border-radius: 25px;
+}
+
 pre,
 code {
 	font-family: Menlo, Monaco, "Courier New", monospace;

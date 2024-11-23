@@ -1,17 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><title>Hello World</title><meta name="author" content="Zigi Ganymede"><meta name="description" content="This is the first sample post on my blog."><link rel="stylesheet" type="text/css" href="assets/styles.css"></head><header><nav class="navbar"><div class="container"><a href="/" class="navbar-brand">My Blog</a><ul class="navbar-nav"><li class="nav-item"><a href="/">Home</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/about">About</a></li></ul><form class="navbar-search" id="search-form"><input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="search-input"></form></div><div class="tag-filter" id="tag-filter" style="display: none;"><p>Filter by Tag:</p><form id="tag-form"><label><input type="checkbox" name="tags" value="blog"></input>blog</label><label><input type="checkbox" name="tags" value="hello"></input>hello</label><label><input type="checkbox" name="tags" value="introduction"></input>introduction</label><label><input type="checkbox" name="tags" value="rust"></input>rust</label><button type="submit">Filter</button></form></div></nav><script>
-                document.getElementById('search-input').addEventListener('focus', function() {
-                    document.getElementById('tag-filter').style.display = 'block';
-                });
-
-                document.getElementById('search-input').addEventListener('blur', function() {
-                    // Hide the filter when search bar loses focus (optional)
-                    setTimeout(function() {
-                        if (!document.getElementById('search-input').value) {
-                            document.getElementById('tag-filter').style.display = 'none';
-                        }
-                    }, 200);
-                });
-            </script></header><body><h1>Hello World</h1>
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Hello World</title><meta name="author" content="Zigi Ganymede"><meta name="description" content="This is the first sample post on my blog."><link rel="stylesheet" type="text/css" href="assets/styles.css"></head><header><nav class="navbar"><div class="container"><ul class="navbar-nav"><li class="nav-brand"><a href="/">ZG</a></li><li class="nav-item"><a href="/">Home</a></li><li class="nav-item"><a href="/archive">Archive</a></li><li class="nav-item"><a href="/about">About</a></li></ul><form class="navbar-search" id="search-form" tabindex="0"><input class="search-input" type="search" placeholder="Search" aria-label="Search" id="search-input"><div class="tag-filter" id="tag-filter"><p class="tags-label">Filter by Tag:</p><div class="tag-div"><form class="tag-form"><label class="tag-box" for="checkbox-rust"><input type="checkbox" id="checkbox-rust" name="tags" value="rust"></input><span class="tag-term">rust</span></label><label class="tag-box" for="checkbox-hello"><input type="checkbox" id="checkbox-hello" name="tags" value="hello"></input><span class="tag-term">hello</span></label><label class="tag-box" for="checkbox-introduction"><input type="checkbox" id="checkbox-introduction" name="tags" value="introduction"></input><span class="tag-term">introduction</span></label><label class="tag-box" for="checkbox-blog"><input type="checkbox" id="checkbox-blog" name="tags" value="blog"></input><span class="tag-term">blog</span></label></form></div></div></form></div></nav></header><body><h1>Hello World</h1>
 <p>My name is Zigi, I'm a software engineer and a musician and I have lots of ideas
 that I need to put up somewhere sometimes. I'm not much of a blogger but the
 industry is frequently curious about the status of your website and as a creator

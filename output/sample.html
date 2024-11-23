@@ -1,37 +1,17 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><title>Hello World</title><meta name="author" content="Zigi Ganymede"><meta name="description" content="This is the first sample post on my blog."><link rel="stylesheet" type="text/css" href="assets/styles.css"></head><header><nav class="navbar"><div class="container"><a href="/" class="navbar-brand">My Blog</a><ul class="navbar-nav"><li class="nav-item"><a href="/">Home</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/about">About</a></li></ul><form class="navbar-search" id="search-form"><input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="search-input"></form></div><div class="tag-filter" id="tag-filter" style="display: none;"><p>Filter by Tag:</p><form id="tag-form"><label><input type="checkbox" name="tags" value="blog"></input>blog</label><label><input type="checkbox" name="tags" value="rust"></input>rust</label><label><input type="checkbox" name="tags" value="hello"></input>hello</label><label><input type="checkbox" name="tags" value="introduction"></input>introduction</label><button type="submit">Filter</button></form></div></nav><script>
-                document.getElementById('search-input').addEventListener('focus', function() {
-                    document.getElementById('tag-filter').style.display = 'block';
-                });
-
-                document.getElementById('search-input').addEventListener('blur', function() {
-                    // Hide the filter when search bar loses focus (optional)
-                    setTimeout(function() {
-                        if (!document.getElementById('search-input').value) {
-                            document.getElementById('tag-filter').style.display = 'none';
-                        }
-                    }, 200);
-                });
-            </script></header><body><h1>Hello World</h1>
-<p>My name is Zigi, I'm a software engineer and a musician and I have lots of ideas
-that I need to put up somewhere sometimes. I'm not much of a blogger but the
-industry is frequently curious about the status of your website and as a creator
-of music and software it may make sense to have a blog like this one to serve as
-the platform for these things. I had a version one of the blog but I wasn't
-really interested in working on it and it didn't really have any structure or
-order, it was a mess of css and I've always wanted a more structured approach
-but I felt I didn't really have any content I wanted to put out there.</p>
-<h2>Enter Rust</h2>
-<p>This little programming language has been on my purview for so long, but I never
-was getting around to checking it out. I decided to give Rust a chance and I
-really like it, I feel like a very powerful programmer with the borrow checker
-and typesense at my disposal. I'm a project based learner so I started working
-on little projects while I read the <a href="https://doc.rust-lang.org/book/">book</a> to
-cement my understanding of the basics. This blog is made entirely using the
-static site generator I'm building in Rust.</p>
-<h2>Projects on Projects</h2>
-<p>I wrote a small command-line program called Human Resources Tool (hrt) and the
-book finished with a basic multithreaded webserver so I did the natural thing
-and started combining them as a technical exercise. This static site generator
-takes all the markdown files in the content and rebuilds them as html files with
-a little markup for a uniform and connected approach.</p>
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Hello World</title><meta name="author" content="Zigi Ganymede"><meta name="description" content="This is the first sample post on my blog."><link rel="stylesheet" type="text/css" href="assets/styles.css"></head><header><nav class="navbar"><div class="container"><ul class="navbar-nav"><li class="nav-brand"><a href="/">ZG</a></li><li class="nav-item"><a href="/">Home</a></li><li class="nav-item"><a href="/archive">Archive</a></li><li class="nav-item"><a href="/about">About</a></li></ul><form class="navbar-search" id="search-form" tabindex="0"><input class="search-input" type="search" placeholder="Search" aria-label="Search" id="search-input"><div class="tag-filter" id="tag-filter"><p class="tags-label">Filter by Tag:</p><div class="tag-div"><form class="tag-form"><label class="tag-box" for="checkbox-rust"><input type="checkbox" id="checkbox-rust" name="tags" value="rust"></input><span class="tag-term">rust</span></label><label class="tag-box" for="checkbox-hello"><input type="checkbox" id="checkbox-hello" name="tags" value="hello"></input><span class="tag-term">hello</span></label><label class="tag-box" for="checkbox-introduction"><input type="checkbox" id="checkbox-introduction" name="tags" value="introduction"></input><span class="tag-term">introduction</span></label><label class="tag-box" for="checkbox-blog"><input type="checkbox" id="checkbox-blog" name="tags" value="blog"></input><span class="tag-term">blog</span></label></form></div></div></form></div></nav></header><body><h2>Hello World</h2>
+<p>Welcome to my blog! This is my first post.</p>
+<p>I’ll be writing about various topics here, including:</p>
+<ul>
+<li>Technology</li>
+<li>Coding</li>
+<li>Rust programming</li>
+<li>Web development</li>
+<li>And much more!</li>
+</ul>
+<p>Stay tuned for more updates and feel free to reach out with any comments or suggestions.</p>
+<p>Thanks for stopping by!</p>
+<hr />
+<h3>About This Post</h3>
+<p>This post is just a sample to demonstrate the structure of a Markdown blog post.
+You can customize the frontmatter and content as you like.</p>
 </body><footer><p>Published on: 2024-11-14</p><a href="#top">Back to top</a></footer></html>
