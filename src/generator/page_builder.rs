@@ -2,10 +2,14 @@
 use std::collections::HashSet;
 use comrak::markdown_to_html;
 use maud::{html, Markup, DOCTYPE};
+use serde_json::json;
 
 use super::{Post, PostPreview};
 
-fn navbar(_posts: &[PostPreview], tag_set: &HashSet<String>) -> Markup {
+
+fn navbar(posts: &[PostPreview], tag_set: &HashSet<String>) -> Markup {
+    let previews = json!(posts).to_string();
+
     html! {
         nav class="navbar" {
             div class="container" {
@@ -13,7 +17,7 @@ fn navbar(_posts: &[PostPreview], tag_set: &HashSet<String>) -> Markup {
                 // a href="/" class="navbar-brand" { "ZG" }
 
                 // Center: Navigation links
-                ul class="navbar-nav" {
+                ul class="navbar-navlinks" {
                     li class="nav-brand" { a href="/" { "ZG" } }
                     li class="nav-item" { a href="/" { "Home" } }
                     li class="nav-item" { a href="/archive" { "Archive" } }
@@ -21,12 +25,12 @@ fn navbar(_posts: &[PostPreview], tag_set: &HashSet<String>) -> Markup {
                 }
 
                 // Right: Search bar
-				form class="navbar-search" id="search-form" tabindex="0" {
+				div class="navbar-search" id="search-form" tabindex="0" {
 					input class="search-input" type="search" placeholder="Search" aria-label="Search" id="search-input";
 
                     // Tag filter section (Initially hidden)
                     div class="tag-filter" id="tag-filter" {
-                        p class="tags-label" { "Filter by Tag:" }
+                        p class="label" { "Filter by Tag:" }
                         div class="tag-div" {
                             form class="tag-form" {
                                 // Checkboxes for each tag
@@ -42,27 +46,22 @@ fn navbar(_posts: &[PostPreview], tag_set: &HashSet<String>) -> Markup {
                             }
                         }
                     }
-				}
+                    div class="search-results" {
+                        p class="label" { "Results: " }
+                        div class="results-div" {
+                            
+                        }
+                    }
+                }
+                // This makes previews available to the client.
+                script {
+                    (maud::PreEscaped(format!("const previews = {};", previews)))
+                }
+                // Later potentially add "defer" to this script because it's not
+                // immediately necessary.
+                script src="/assets/searchbar.js" {}
             }
         }
-
-        // JavaScript to show the filter when search is active
-        // script {
-        //     r#"
-        //         document.getElementById('search-input').addEventListener('focus', function() {
-        //             document.getElementById('tag-filter').style.display = 'block';
-        //         });
-
-        //         document.getElementById('search-input').addEventListener('blur', function() {
-        //             // Hide the filter when search bar loses focus (optional)
-        //             setTimeout(function() {
-        //                 if (!document.getElementById('search-input').value) {
-        //                     document.getElementById('tag-filter').style.display = 'none';
-        //                 }
-        //             }, 200);
-        //         });
-        //     "#
-        // }
     }
 }
 

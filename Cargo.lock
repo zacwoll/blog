@@ -142,6 +142,7 @@ dependencies = [
  "maud",
  "notify",
  "serde",
+ "serde_json",
 ]
 
 [[package]]

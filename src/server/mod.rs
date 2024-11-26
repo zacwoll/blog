@@ -21,7 +21,7 @@ pub fn server_create(port: u16) {
             // Check stream validity
             let stream = match stream {
                 Ok(stream) => {
-                    let peer_addr = match stream.peer_addr() {
+                    let _peer_addr = match stream.peer_addr() {
                         Ok(addr) => addr,
                         Err(err) => {
                             println!("unknown address: {}", err);
@@ -51,12 +51,13 @@ pub fn server_create(port: u16) {
 
 fn get_content_type(ext: &str) -> &str {
     match ext {
+        "" => "text/html",
         "html" => "text/html",
         "css" => "text/css",
         "png" => "image/png",
         "jpg" | "jpeg" => "image/jpeg",
         "gif" => "image/gif",
-        "" => "text/html",
+        "js" => "application/javascript",
         _ => "application/octet-stream", // Default content type for files with no extension or unknown extension
     }
 }

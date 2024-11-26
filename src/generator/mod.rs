@@ -4,7 +4,7 @@ use std::{
     fs, io::Write, path::Path,
 };
 use gray_matter::{engine::YAML, Matter, ParsedEntityStruct};
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 use std::collections::HashSet;
 
 // Create a struct to hold the front matter
@@ -39,13 +39,15 @@ impl File {
 
 // Data structure that unites the file data and the post data (content)
 pub struct Post {
+    id: u32,
     file_data: File,
     parsed_post_data: ParsedEntityStruct<PostData>
 }
 
 impl Post {
-    fn new(file: File, parsed_post: ParsedEntityStruct<PostData>) -> Post {
+    fn new(id: u32, file: File, parsed_post: ParsedEntityStruct<PostData>) -> Post {
         Post {
+            id,
             file_data: file,
             parsed_post_data: parsed_post,
         }
@@ -54,21 +56,24 @@ impl Post {
     // This constructs a lightweight preview of a post
     fn to_preview(&self) -> PostPreview {
         PostPreview {
+            id: self.id,
             resource: self.file_data.file_name.clone(),
             title: self.parsed_post_data.data.title.clone(),
             tags: self.parsed_post_data.data.tags.clone(),
             date: self.parsed_post_data.data.date.clone(),
-            excerpt: self.parsed_post_data.excerpt.clone()
+            description: self.parsed_post_data.data.description.clone(),
         }
     }
 }
 
+#[derive(Serialize)]
 pub struct PostPreview {
+    id: u32,
     resource: String,
     title: String,
+    description: String,
     tags: Vec<String>,
     date: String,
-    excerpt: Option<String>,
 }
 
 pub fn generate_site(content_dir: &str, output_dir: &str) -> Result<(), Box<dyn std::error::Error>> {
@@ -89,7 +94,7 @@ pub fn generate_site(content_dir: &str, output_dir: &str) -> Result<(), Box<dyn 
     // Create container for read-in files
     let mut posts: Vec<Post> = Vec::new();
     let mut previews: Vec<PostPreview> = Vec::new();
-
+    let mut current_id: u32 = 1;
     let mut post_files : Vec<File> = Vec::new();
 
     // Get files from directory
@@ -173,10 +178,12 @@ pub fn generate_site(content_dir: &str, output_dir: &str) -> Result<(), Box<dyn 
         };
 
         // Add to Post Collection
-        let post: Post = Post::new(new_file, parsed_matter);
+        let post: Post = Post::new(current_id, new_file, parsed_matter);
         let preview = post.to_preview();
         posts.push(post);
         previews.push(preview);
+        // increment id
+        current_id += 1;
     }
 
     // Generate tag set from all posts
