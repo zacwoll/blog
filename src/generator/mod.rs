@@ -215,7 +215,6 @@ pub fn generate_site(content_dir: &str, output_dir: &str) -> Result<(), Box<dyn 
         };
         
         // Write HTML to file
-        // TODO: rename top-level file_data to avoid file_data.file_data 
         match create_file.write(blog_post.0.as_bytes()) {
             Ok(bytes) => println!("{bytes} bytes written to {}", &file_path.display()),
             Err(err) => println!("Failed to write html to file: {}", err),

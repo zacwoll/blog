@@ -68,7 +68,7 @@ fn handle_get(mut stream: TcpStream, path: PathBuf) {
 
     // Point / => home blog post
     let path = if path.to_str() == Some("/") {
-        PathBuf::from("/home")
+        PathBuf::from("/index.html")
     } else {
         path
     };

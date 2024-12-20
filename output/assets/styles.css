@@ -1,13 +1,96 @@
+/** This is the root styles.css of the blog
+*********************************************/
+
+:root {
+	--background-color: #f9f9f9;/* Very light gray */
+	--content-bg-color: #ffffff;/* White for content */
+
+	--search-bg-color: grey;
+	--tags-bg-color: orange;
+	--link-color: #2196F3;
+	--w3-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2),
+		0 4px 20px 0 rgba(0, 0, 0, 0.19);
+
+	--text-color: #333333;/* Neutral dark gray for text */
+	--heading-color: #000000;/* Black for headings */
+	--link-hover-color: #0056b3;/* Darker blue for hover state */
+	--box-shadow-color: rgba(0, 0, 0, 0.1);/* Subtle shadow */
+}
+
+.dark-mode {
+	--background-color: #121212;
+	--content-bg-color: #1E1E1E;
+	--text-color: #E0E0E0;
+	--search-bg-color: grey;
+	--tags-bg-color: orange;
+	--link-color: #BB86FC;
+
+	--primary-color: #fcbf49;/* Warm yellow, more muted */
+	--secondary-color: #f77f00;/* Sunset orange */
+	--tertiary-color: #d62828;/* Warm red, slightly deeper */
+	--code-bg-color: #ff6347;/* Coral background for code */
+	--code-text-color: #fff5e1;/* Light text for code */
+}
+
+.whimsy-mode {
+	/* light lavender purple */
+	--background-color: #F3E8FF;
+	/* light orange */
+	--content-bg-color: #FFEEDB;
+	/* Dark Navy Blue */
+	--text-color: #37474F;
+
+	--search-bg-color: grey;
+	--tags-bg-color: orange;
+	--link-color: #004D40;
+	--link-active: purple;
+
+}
+
+*,
+*::before,
+*::after {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+body {
+	background-color: var(--background-color);
+	color: var(--text-color);
+	display: grid;
+	gap: 16px;
+	justify-items: center;
+}
+
+header {
+	width: 100%;
+	max-width: 1440px;
+}
+
 .container {
 	max-width: 1200px;
 }
 
+/* Content Container */
+body > .container {
+	display: grid;
+	background-color: var(--content-bg-color);
+	padding: 1rem;
+
+	box-shadow: var(--w3-box-shadow);
+}
+
+/* Navbar container: [Brand + Links][Search] */
 .navbar > .container {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	align-items: center;
 	grid-template-rows: auto auto;
 	row-gap: 1rem;
+	width: 100%;
+	max-width: 1440px;
+	padding-top: 1rem;
 }
 
 .navbar ul {
@@ -18,18 +101,25 @@
 	justify-content: space-between;
 }
 
+a {
+	color: var(--text-color);
+}
+
+a:visited {
+	color: var(--link-color);
+}
+
 .navbar-search {
 	justify-self: end;
 	max-width: 900px;
 	width: 90%;
 	display: grid;
-	padding: 1rem;
 }
 
 .navbar-search:focus-within {
 	grid-column: span 2;
 	justify-self: center;
-	background: grey;
+	background: var(--code-bg-color);
 }
 
 p.label {
@@ -87,20 +177,27 @@ p.label {
 
 	border-radius: 25px;
 
-	background-color: #333;
+	background-color: var(--primary-color);
 }
 
+/*
+	Retro-css from here
+ */
+
+ /* Monospaced fonts for code blocks */
 pre,
 code {
 	font-family: Menlo, Monaco, "Courier New", monospace;
 }
 
+/* Horizontal scrolling for code blocks */
 pre {
 	padding: .5rem;
 	line-height: 1.25;
 	overflow-x: scroll;
 }
 
+/* Styling for print */
 @media print {
 
 	*,
@@ -162,15 +259,10 @@ pre {
 	}
 }
 
-a,
-a:visited {
-	color: #01ff70;
-}
-
 a:hover,
 a:focus,
 a:active {
-	color: #2ecc40;
+	color: var(--secondary-color);
 }
 
 .retro-no-decoration {
@@ -211,7 +303,7 @@ h3,
 .retro-h3,
 h4,
 .retro-h4 {
-	margin: 1.414rem 0 .5rem;
+	text-align: center;
 	font-weight: inherit;
 	line-height: 1.42;
 }
@@ -266,7 +358,6 @@ textarea {
 
 html,
 body {
-	background-color: #222;
 	min-height: 100%;
 }
 
@@ -275,19 +366,28 @@ html {
 }
 
 body {
-	color: #fafafa;
 	font-family: "Courier New";
 	line-height: 1.45;
-	margin: 6rem auto 1rem;
-	max-width: 48rem;
 	padding: .25rem;
 }
 
 pre {
-	background-color: #333;
+	background-color: var(--code-bg-color);
 }
 
 blockquote {
-	border-left: 3px solid #01ff70;
+	border-left: 3px solid var(--tertiary-color);
 	padding-left: 1rem;
 }
+
+/* Key
+ * Search Background Color: grey
+ * Tag-Box background color: black
+ * Links: 01ff70 2ecc40 - lime dark-lime
+ * - visited: 01ff70
+ * - active: 2ecc40
+ * blockquote border-left: 01ff70
+ * html, body: background-color: darker grey
+ * body: color: white
+ * pre: background-color: dark grey;
+ */

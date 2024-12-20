@@ -59,7 +59,7 @@ fn navbar(posts: &[PostPreview], tag_set: &HashSet<String>) -> Markup {
                 }
                 // Later potentially add "defer" to this script because it's not
                 // immediately necessary.
-                script src="/assets/searchbar.js" {}
+                script src="assets/searchbar.js" {}
             }
         }
     }
@@ -86,7 +86,9 @@ fn header(current_post: &Post, posts: &[PostPreview], tag_set: &HashSet<String>)
 fn body(blog_post: String) -> Markup {
     html! {
         body {
-            (maud::PreEscaped(blog_post))
+            div.container {
+                (maud::PreEscaped(blog_post))
+            }
         }
     }
 }
